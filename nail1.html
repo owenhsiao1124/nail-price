@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>美甲價格計算器</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --card:#111827;
+      --card2:#0f172a;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#233044;
+      --accent:#60a5fa;
+      --accent2:#34d399;
+      --danger:#fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(96,165,250,.18), transparent 60%),
+                  radial-gradient(1200px 700px at 80% 30%, rgba(52,211,153,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      padding: 18px 14px 40px;
+    }
+    .app{
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 2px 6px;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+      font-weight: 750;
+    }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17,24,39,.55);
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill strong{color:var(--text); font-weight:700}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 860px){
+      .grid{
+        grid-template-columns: 1.15fr .85fr;
+        align-items:start;
+      }
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(17,24,39,.92), rgba(15,23,42,.86));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card__header{
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(35,48,68,.6);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card__header h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: .15px;
+      font-weight: 720;
+    }
+    .card__header .hint{
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .card__body{
+      padding: 14px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
+    .section{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(35,48,68,.6);
+      border-radius: 14px;
+      background: rgba(15,23,42,.55);
+    }
+    .section__title{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .section__title h3{
+      margin:0;
+      font-size: 13px;
+      font-weight: 720;
+    }
+    .section__title span{
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .options{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 520px){
+      .options{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .radio-card, .check-card{
+      border: 1px solid rgba(35,48,68,.75);
+      background: rgba(17,24,39,.5);
+      border-radius: 14px;
+      padding: 10px 10px 10px 12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      cursor:pointer;
+      transition: border-color .15s ease, transform .05s ease;
+      user-select:none;
+    }
+    .radio-card:hover, .check-card:hover{ border-color: rgba(96,165,250,.55); }
+    .radio-card:active, .check-card:active{ transform: translateY(1px); }
+    .radio-card input, .check-card input{ margin-top: 2px; }
+    .opt-meta{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+      min-width:0;
+    }
+    .opt-meta .name{
+      font-size: 13px;
+      font-weight: 700;
+      margin:0;
+    }
+    .opt-meta .desc{
+      margin:0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 520px){
+      .row{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    label.field{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    input[type="number"], select, textarea{
+      width: 100%;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(35,48,68,.75);
+      background: rgba(3,7,18,.5);
+      color: var(--text);
+      outline: none;
+      font-size: 13px;
+    }
+    textarea{ min-height: 88px; resize: vertical; }
+    input[type="number"]::placeholder, textarea::placeholder{ color: rgba(156,163,175,.7); }
+    input[type="number"]:focus, select:focus, textarea:focus{
+      border-color: rgba(96,165,250,.7);
+      box-shadow: 0 0 0 3px rgba(96,165,250,.18);
+    }
+    .addon-grid{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .addon-item{
+      border: 1px solid rgba(35,48,68,.75);
+      border-radius: 14px;
+      background: rgba(17,24,39,.46);
+      padding: 10px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .addon-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .addon-left{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      min-width:0;
+    }
+    .addon-title{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+      min-width:0;
+    }
+    .addon-title .name{
+      margin:0;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .addon-title .desc{
+      margin:0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .addon-controls{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 520px){
+      .addon-controls{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .addon-controls .inline{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .badge{
+      font-size: 11px;
+      color: rgba(229,231,235,.9);
+      padding: 2px 8px;
+      border: 1px solid rgba(35,48,68,.9);
+      border-radius: 999px;
+      background: rgba(15,23,42,.6);
+      white-space:nowrap;
+    }
+    .summary{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+    .totals{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(35,48,68,.75);
+      background: rgba(15,23,42,.55);
+    }
+    .total-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:12px;
+    }
+    .total-row .label{
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .total-row .value{
+      font-weight: 750;
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+    .total-row.final .label{ color: rgba(229,231,235,.92); }
+    .total-row.final .value{ font-size: 18px; }
+    .value.negative{ color: var(--danger); }
+    .value.accent{ color: var(--accent2); }
+    .divider{
+      height:1px;
+      background: rgba(35,48,68,.7);
+      margin: 2px 0;
+    }
+    .detail{
+      border: 1px solid rgba(35,48,68,.75);
+      border-radius: 14px;
+      background: rgba(17,24,39,.46);
+      overflow:hidden;
+    }
+    .detail header{
+      padding: 12px;
+      border-bottom: 1px solid rgba(35,48,68,.6);
+    }
+    .detail header h3{
+      margin:0;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .detail .content{
+      padding: 10px 12px 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .line-item{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items:baseline;
+    }
+    .line-item .left{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+    }
+    .line-item .left .top{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .line-item .name{
+      font-weight: 730;
+      font-size: 13px;
+      margin:0;
+    }
+    .line-item .meta{
+      color: var(--muted);
+      font-size: 12px;
+      margin:0;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .line-item .right{
+      text-align:right;
+      font-weight: 760;
+      font-size: 13px;
+      white-space:nowrap;
+    }
+    .btnbar{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+    button{
+      border: 1px solid rgba(35,48,68,.85);
+      background: rgba(96,165,250,.14);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 720;
+      cursor:pointer;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+    }
+    button:hover{
+      border-color: rgba(96,165,250,.65);
+      background: rgba(96,165,250,.18);
+    }
+    button:active{ transform: translateY(1px); }
+    button.secondary{
+      background: rgba(52,211,153,.12);
+    }
+    button.secondary:hover{
+      border-color: rgba(52,211,153,.65);
+      background: rgba(52,211,153,.16);
+    }
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(17,24,39,.92);
+      border: 1px solid rgba(35,48,68,.85);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      font-size: 12.5px;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 999;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+    .muted{ color: var(--muted); }
+    .sr-only{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title">
+        <h1>美甲價格計算器</h1>
+        <p class="subtitle">選擇服務、加購與折扣後，即時計算報價並可一鍵複製貼到 LINE。</p>
+      </div>
+      <div class="pill" id="pillNow">
+        <span class="muted">目前總價</span>
+        <strong id="pillTotal">$0</strong>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-label="輸入區">
+        <div class="card__header">
+          <h2>輸入項目</h2>
+          <div class="hint">即時計算</div>
+        </div>
+
+        <div class="card__body">
+          <div class="section" id="sectionService">
+            <div class="section__title">
+              <h3>基礎服務</h3>
+              <span>單選</span>
+            </div>
+            <div class="options" id="serviceOptions" role="radiogroup" aria-label="基礎服務選擇"></div>
+          </div>
+
+          <div class="section" id="sectionHandsFeet">
+            <div class="section__title">
+              <h3>手數</h3>
+              <span>單選</span>
+            </div>
+            <div class="options" id="areaOptions" role="radiogroup" aria-label="手數選擇"></div>
+          </div>
+
+          <div class="section" id="sectionAddons">
+            <div class="section__title">
+              <h3>加購項目</h3>
+              <span>可複選</span>
+            </div>
+            <div class="addon-grid" id="addonGrid"></div>
+          </div>
+
+          <div class="section" id="sectionDiscount">
+            <div class="section__title">
+              <h3>折扣</h3>
+              <span>自動套用</span>
+            </div>
+            <div class="row">
+              <label class="field">
+                折扣方式
+                <select id="discountType">
+                  <option value="none">無折扣</option>
+                  <option value="p90">打 9 折</option>
+                  <option value="p85">打 85 折</option>
+                  <option value="minus">直接折抵金額</option>
+                </select>
+              </label>
+              <label class="field" id="discountMinusWrap" style="display:none;">
+                折抵金額
+                <input id="discountMinusValue" type="number" min="0" step="1" placeholder="例如 100" />
+              </label>
+            </div>
+          </div>
+
+          <div class="section" id="sectionNote">
+            <div class="section__title">
+              <h3>備註</h3>
+              <span>不影響價格</span>
+            </div>
+            <label class="field">
+              備註內容（會顯示在報價摘要）
+              <textarea id="note" placeholder="例如：預約 1/10 19:00、要偏裸色、避免太亮等"></textarea>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card" aria-label="輸出區">
+        <div class="card__header">
+          <h2>報價明細</h2>
+          <div class="hint" id="statusHint">已更新</div>
+        </div>
+
+        <div class="card__body summary">
+          <div class="totals" aria-label="總額區">
+            <div class="total-row">
+              <div class="label">原價</div>
+              <div class="value" id="subtotalValue">$0</div>
+            </div>
+            <div class="total-row">
+              <div class="label">折扣金額</div>
+              <div class="value negative" id="discountValue">$0</div>
+            </div>
+            <div class="divider"></div>
+            <div class="total-row final">
+              <div class="label">折扣後總價</div>
+              <div class="value accent" id="totalValue">$0</div>
+            </div>
+          </div>
+
+          <div class="detail" aria-label="明細清單">
+            <header>
+              <h3>項目明細</h3>
+            </header>
+            <div class="content" id="detailList"></div>
+          </div>
+
+          <div class="btnbar">
+            <button class="secondary" id="copyQuoteBtn" type="button">複製報價文字</button>
+            <button id="resetBtn" type="button">重設</button>
+          </div>
+
+          <div class="detail" aria-label="備註摘要">
+            <header>
+              <h3>備註</h3>
+            </header>
+            <div class="content">
+              <div class="line-item">
+                <div class="left">
+                  <p class="meta" id="noteSummary">（無）</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const CONFIG = {
+      baseServices: [
+        { id: "svc_solid",   name: "單色凝膠", price: 900 },
+        { id: "svc_design",  name: "造型凝膠", price: 1200 },
+        { id: "svc_extend",  name: "延甲/貼片", price: 1600 },
+        { id: "svc_remove",  name: "卸甲",     price: 300 }
+      ],
+      areas: [
+        { id: "hands",    name: "手", multiplier: 1, fingers: 10 },
+        { id: "feet",     name: "腳", multiplier: 1, fingers: 10 },
+        { id: "both",     name: "手+腳", multiplier: 2, fingers: 20 }
+      ],
+      addons: [
+        { id: "addon_accent", name: "跳色", unitLabel: "每指", unitPrice: 50, type: "per_unit", unitKind: "finger" },
+        { id: "addon_rhin",   name: "貼鑽", unitLabel: "每顆", unitPrice: 10, type: "per_unit", unitKind: "piece" },
+        { id: "addon_french", name: "法式", unitLabel: "整手", unitPrice: 200, type: "per_set" },
+        { id: "addon_ombre",  name: "漸層", unitLabel: "整手", unitPrice: 200, type: "per_set" },
+        { id: "addon_paint",  name: "手繪", unitLabel: "每指", unitPrice: 80, type: "per_unit", unitKind: "finger" },
+        { id: "addon_reinf",  name: "修型加強", unitLabel: "整手", unitPrice: 150, type: "per_set" }
+      ],
+      rangeOptionsForBoth: [
+        { id: "hands", name: "只手" },
+        { id: "feet",  name: "只腳" },
+        { id: "both",  name: "手+腳" }
+      ]
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      serviceId: CONFIG.baseServices[0].id,
+      areaId: CONFIG.areas[0].id,
+      discountType: "none",
+      discountMinusValue: 0,
+      note: "",
+      addons: Object.fromEntries(CONFIG.addons.map(a => [
+        a.id,
+        {
+          enabled: false,
+          range: "hands",
+          qty: 0
+        }
+      ]))
+    };
+
+    function money(n){
+      const x = Math.round(Number(n) || 0);
+      return "$" + x.toLocaleString("zh-Hant");
+    }
+
+    function clampInt(n, min=0){
+      const v = Math.floor(Number(n));
+      if (!Number.isFinite(v)) return min;
+      return Math.max(min, v);
+    }
+
+    function getSelectedService(){
+      return CONFIG.baseServices.find(s => s.id === state.serviceId) || CONFIG.baseServices[0];
+    }
+
+    function getSelectedArea(){
+      return CONFIG.areas.find(a => a.id === state.areaId) || CONFIG.areas[0];
+    }
+
+    function isBoth(){
+      return state.areaId === "both";
+    }
+
+    function renderServiceOptions(){
+      const wrap = $("serviceOptions");
+      wrap.innerHTML = "";
+      for (const svc of CONFIG.baseServices){
+        const id = "radio_" + svc.id;
+        const label = document.createElement("label");
+        label.className = "radio-card";
+        label.setAttribute("for", id);
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "base_service";
+        input.id = id;
+        input.value = svc.id;
+        input.checked = (svc.id === state.serviceId);
+
+        input.addEventListener("change", () => {
+          state.serviceId = svc.id;
+          recalcAndRender();
+        });
+
+        const meta = document.createElement("div");
+        meta.className = "opt-meta";
+        meta.innerHTML = `
+          <p class="name">${svc.name}</p>
+          <p class="desc">單價 ${money(svc.price)}</p>
+        `;
+
+        label.appendChild(input);
+        label.appendChild(meta);
+        wrap.appendChild(label);
+      }
+    }
+
+    function renderAreaOptions(){
+      const wrap = $("areaOptions");
+      wrap.innerHTML = "";
+      for (const ar of CONFIG.areas){
+        const id = "radio_area_" + ar.id;
+        const label = document.createElement("label");
+        label.className = "radio-card";
+        label.setAttribute("for", id);
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "area";
+        input.id = id;
+        input.value = ar.id;
+        input.checked = (ar.id === state.areaId);
+
+        input.addEventListener("change", () => {
+          state.areaId = ar.id;
+          normalizeRangesForArea();
+          recalcAndRender();
+        });
+
+        const meta = document.createElement("div");
+        meta.className = "opt-meta";
+        meta.innerHTML = `
+          <p class="name">${ar.name}</p>
+          <p class="desc">基礎服務倍率 ×${ar.multiplier}</p>
+        `;
+
+        label.appendChild(input);
+        label.appendChild(meta);
+        wrap.appendChild(label);
+      }
+    }
+
+    function normalizeRangesForArea(){
+      if (isBoth()) return;
+      for (const addon of CONFIG.addons){
+        const a = state.addons[addon.id];
+        a.range = state.areaId;
+      }
+    }
+
+    function renderAddonGrid(){
+      const wrap = $("addonGrid");
+      wrap.innerHTML = "";
+
+      for (const addon of CONFIG.addons){
+        const aState = state.addons[addon.id];
+
+        const box = document.createElement("div");
+        box.className = "addon-item";
+        box.dataset.addonId = addon.id;
+
+        const head = document.createElement("div");
+        head.className = "addon-head";
+
+        const left = document.createElement("div");
+        left.className = "addon-left";
+
+        const checkId = "check_" + addon.id;
+
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.id = checkId;
+        check.checked = !!aState.enabled;
+        check.addEventListener("change", () => {
+          aState.enabled = check.checked;
+          if (!aState.enabled){
+            if (addon.type === "per_unit") aState.qty = 0;
+          } else {
+            if (addon.type === "per_unit" && aState.qty === 0) aState.qty = 1;
+          }
+          recalcAndRender();
+          renderAddonGrid();
+        });
+
+        const title = document.createElement("div");
+        title.className = "addon-title";
+        title.innerHTML = `
+          <p class="name">${addon.name} <span class="badge">${addon.unitLabel} +${addon.unitPrice}</span></p>
+          <p class="desc">可選套用範圍${isBoth() ? "（手+腳時）" : ""}</p>
+        `;
+
+        left.appendChild(check);
+        left.appendChild(title);
+
+        const metaRight = document.createElement("div");
+        metaRight.className = "badge";
+        metaRight.textContent = aState.enabled ? "已選" : "未選";
+
+        head.appendChild(left);
+        head.appendChild(metaRight);
+
+        const controls = document.createElement("div");
+        controls.className = "addon-controls";
+
+        const rangeField = document.createElement("label");
+        rangeField.className = "field";
+        rangeField.innerHTML = `套用範圍`;
+        const rangeSelect = document.createElement("select");
+        rangeSelect.id = addon.id + "_range";
+
+        const rangeOptions = isBoth() ? CONFIG.rangeOptionsForBoth : [{ id: state.areaId, name: (state.areaId === "hands" ? "只手" : "只腳") }];
+        for (const opt of rangeOptions){
+          const o = document.createElement("option");
+          o.value = opt.id;
+          o.textContent = opt.name;
+          rangeSelect.appendChild(o);
+        }
+        rangeSelect.value = aState.range;
+        rangeSelect.disabled = !aState.enabled || (!isBoth() && true);
+        rangeSelect.addEventListener("change", () => {
+          aState.range = rangeSelect.value;
+          recalcAndRender();
+        });
+        rangeField.appendChild(rangeSelect);
+
+        controls.appendChild(rangeField);
+
+        if (addon.type === "per_unit"){
+          const qtyField = document.createElement("label");
+          qtyField.className = "field";
+          qtyField.innerHTML = `數量（${addon.unitKind === "finger" ? "幾指" : "幾顆"}）`;
+          const qtyInput = document.createElement("input");
+          qtyInput.type = "number";
+          qtyInput.min = "0";
+          qtyInput.step = "1";
+          qtyInput.placeholder = addon.unitKind === "finger" ? "例如 3" : "例如 20";
+          qtyInput.value = String(aState.qty || 0);
+          qtyInput.disabled = !aState.enabled;
+
+          qtyInput.addEventListener("input", () => {
+            aState.qty = clampInt(qtyInput.value, 0);
+            recalcAndRender();
+          });
+
+          qtyField.appendChild(qtyInput);
+          controls.appendChild(qtyField);
+
+          if (addon.unitKind === "finger"){
+            const cap = document.createElement("div");
+            cap.className = "muted";
+            cap.style.fontSize = "12px";
+            cap.style.marginTop = "-6px";
+            const capText = isBoth()
+              ? "上限：手 10 指／腳 10 指（合計 20 指）"
+              : "上限：10 指";
+            cap.textContent = capText;
+            qtyField.appendChild(cap);
+          }
+        } else {
+          const note = document.createElement("div");
+          note.className = "muted";
+          note.style.fontSize = "12px";
+          note.style.alignSelf = "end";
+          note.textContent = isBoth()
+            ? "整手類可選只手/只腳/手+腳"
+            : "整手類會自動套用目前手/腳";
+          controls.appendChild(note);
+        }
+
+        box.appendChild(head);
+        box.appendChild(controls);
+        wrap.appendChild(box);
+      }
+    }
+
+    function calcRangeMultiplier(rangeId){
+      if (rangeId === "both") return 2;
+      return 1;
+    }
+
+    function calcMaxFingersForRange(rangeId){
+      if (rangeId === "both") return 20;
+      return 10;
+    }
+
+    function calcBaseLine(){
+      const svc = getSelectedService();
+      const ar = getSelectedArea();
+      const subtotal = svc.price * ar.multiplier;
+      return {
+        name: svc.name,
+        unitPrice: svc.price,
+        multiplier: ar.multiplier,
+        subtotal
+      };
+    }
+
+    function calcAddonsLines(){
+      const lines = [];
+      for (const addon of CONFIG.addons){
+        const aState = state.addons[addon.id];
+        if (!aState.enabled) continue;
+
+        const rangeId = isBoth() ? aState.range : state.areaId;
+        const rangeName = rangeId === "hands" ? "只手" : rangeId === "feet" ? "只腳" : "手+腳";
+
+        if (addon.type === "per_set"){
+          const mul = isBoth() ? calcRangeMultiplier(rangeId) : 1;
+          const lineSubtotal = addon.unitPrice * mul;
+          lines.push({
+            kind: "addon",
+            id: addon.id,
+            name: addon.name,
+            rangeId,
+            rangeName,
+            qtyText: mul === 1 ? "1 組" : "2 組",
+            unitText: addon.unitLabel,
+            unitPrice: addon.unitPrice,
+            subtotal: lineSubtotal
+          });
+        } else {
+          let qty = clampInt(aState.qty, 0);
+          if (addon.unitKind === "finger"){
+            const max = calcMaxFingersForRange(rangeId);
+            qty = Math.min(qty, max);
+          }
+          const lineSubtotal = addon.unitPrice * qty;
+          lines.push({
+            kind: "addon",
+            id: addon.id,
+            name: addon.name,
+            rangeId,
+            rangeName,
+            qtyText: `${qty} ${addon.unitKind === "finger" ? "指" : "顆"}`,
+            unitText: addon.unitLabel,
+            unitPrice: addon.unitPrice,
+            subtotal: lineSubtotal,
+            qty
+          });
+
+          if (addon.unitKind === "finger" && qty !== clampInt(aState.qty,0)){
+            state.addons[addon.id].qty = qty;
+            const input = document.getElementById(addon.id + "_qty");
+            if (input) input.value = String(qty);
+          }
+        }
+      }
+      return lines;
+    }
+
+    function calcDiscount(subtotal){
+      let discount = 0;
+      const t = state.discountType;
+
+      if (t === "p90"){
+        discount = subtotal - Math.round(subtotal * 0.9);
+      } else if (t === "p85"){
+        discount = subtotal - Math.round(subtotal * 0.85);
+      } else if (t === "minus"){
+        discount = clampInt(state.discountMinusValue, 0);
+      } else {
+        discount = 0;
+      }
+
+      discount = Math.min(discount, subtotal);
+      discount = Math.max(0, discount);
+
+      return discount;
+    }
+
+    function buildDetailLines(){
+      const base = calcBaseLine();
+      const addonLines = calcAddonsLines();
+      const subtotal = base.subtotal + addonLines.reduce((s, x) => s + x.subtotal, 0);
+      const discount = calcDiscount(subtotal);
+      const total = Math.max(0, subtotal - discount);
+
+      return { base, addonLines, subtotal, discount, total };
+    }
+
+    function renderSummary(){
+      const { base, addonLines, subtotal, discount, total } = buildDetailLines();
+
+      $("subtotalValue").textContent = money(subtotal);
+      $("discountValue").textContent = "-" + money(discount);
+      $("totalValue").textContent = money(total);
+
+      $("pillTotal").textContent = money(total);
+
+      const detail = $("detailList");
+      detail.innerHTML = "";
+
+      const baseEl = document.createElement("div");
+      baseEl.className = "line-item";
+      baseEl.innerHTML = `
+        <div class="left">
+          <div class="top">
+            <p class="name">基礎服務：${base.name}</p>
+            <span class="badge">單價 ${money(base.unitPrice)}</span>
+            <span class="badge">倍率 ×${base.multiplier}</span>
+          </div>
+          <p class="meta">小計：${money(base.subtotal)}</p>
+        </div>
+        <div class="right">${money(base.subtotal)}</div>
+      `;
+      detail.appendChild(baseEl);
+
+      if (addonLines.length){
+        const sep = document.createElement("div");
+        sep.className = "divider";
+        detail.appendChild(sep);
+
+        for (const line of addonLines){
+          const el = document.createElement("div");
+          el.className = "line-item";
+          el.innerHTML = `
+            <div class="left">
+              <div class="top">
+                <p class="name">${line.name}</p>
+                <span class="badge">${line.rangeName}</span>
+              </div>
+              <p class="meta">${line.qtyText} ・ ${line.unitText} ${money(line.unitPrice)} ・ 小計 ${money(line.subtotal)}</p>
+            </div>
+            <div class="right">${money(line.subtotal)}</div>
+          `;
+          detail.appendChild(el);
+        }
+      } else {
+        const none = document.createElement("div");
+        none.className = "line-item";
+        none.innerHTML = `
+          <div class="left">
+            <p class="meta">（未選擇任何加購項目）</p>
+          </div>
+          <div class="right">${money(0)}</div>
+        `;
+        detail.appendChild(none);
+      }
+
+      const sep2 = document.createElement("div");
+      sep2.className = "divider";
+      detail.appendChild(sep2);
+
+      const discountText = (() => {
+        if (state.discountType === "none") return "無折扣";
+        if (state.discountType === "p90") return "打 9 折";
+        if (state.discountType === "p85") return "打 85 折";
+        if (state.discountType === "minus") return `折抵 ${money(discount)}`;
+        return "無折扣";
+      })();
+
+      const totalsEl = document.createElement("div");
+      totalsEl.className = "line-item";
+      totalsEl.innerHTML = `
+        <div class="left">
+          <div class="top">
+            <p class="name">合計</p>
+            <span class="badge">${discountText}</span>
+          </div>
+          <p class="meta">原價 ${money(subtotal)} ・ 折扣 ${money(discount)} ・ 總價 ${money(total)}</p>
+        </div>
+        <div class="right">${money(total)}</div>
+      `;
+      detail.appendChild(totalsEl);
+
+      const note = (state.note || "").trim();
+      $("noteSummary").textContent = note ? note : "（無）";
+    }
+
+    function buildQuoteText(){
+      const { base, addonLines, subtotal, discount, total } = buildDetailLines();
+      const ar = getSelectedArea();
+      const discountLine = (() => {
+        if (state.discountType === "none") return "折扣：無";
+        if (state.discountType === "p90") return "折扣：打 9 折";
+        if (state.discountType === "p85") return "折扣：打 85 折";
+        if (state.discountType === "minus") return `折扣：折抵 ${money(discount)}`;
+        return "折扣：無";
+      })();
+
+      const lines = [];
+      lines.push("【美甲報價】");
+      lines.push(`- 基礎服務：${base.name}（單價 ${money(base.unitPrice)} × 倍率 ${base.multiplier}）= ${money(base.subtotal)}`);
+      lines.push(`- 手數：${ar.name}`);
+
+      if (addonLines.length){
+        lines.push("- 加購項目：");
+        for (const a of addonLines){
+          lines.push(`  • ${a.name}（${a.rangeName}，${a.qtyText}，${a.unitText} ${money(a.unitPrice)}）= ${money(a.subtotal)}`);
+        }
+      } else {
+        lines.push("- 加購項目：無");
+      }
+
+      lines.push(`- 原價：${money(subtotal)}`);
+      lines.push(`- ${discountLine}`);
+      lines.push(`- 折扣金額：${money(discount)}`);
+      lines.push(`- 總價：${money(total)}`);
+
+      const note = (state.note || "").trim();
+      lines.push(`- 備註：${note ? note : "（無）"}`);
+
+      return lines.join("\n");
+    }
+
+    function showToast(msg){
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      window.clearTimeout(showToast._timer);
+      showToast._timer = window.setTimeout(() => t.classList.remove("show"), 1600);
+    }
+
+    function recalcAndRender(){
+      $("statusHint").textContent = "已更新";
+      renderSummary();
+    }
+
+    function bindDiscount(){
+      $("discountType").addEventListener("change", (e) => {
+        state.discountType = e.target.value;
+        const showMinus = state.discountType === "minus";
+        $("discountMinusWrap").style.display = showMinus ? "" : "none";
+        recalcAndRender();
+      });
+
+      $("discountMinusValue").addEventListener("input", (e) => {
+        state.discountMinusValue = clampInt(e.target.value, 0);
+        recalcAndRender();
+      });
+    }
+
+    function bindNote(){
+      $("note").addEventListener("input", (e) => {
+        state.note = e.target.value;
+        recalcAndRender();
+      });
+    }
+
+    function bindCopy(){
+      $("copyQuoteBtn").addEventListener("click", async () => {
+        const text = buildQuoteText();
+        try{
+          await navigator.clipboard.writeText(text);
+          showToast("已複製報價文字");
+        } catch (err){
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          showToast("已複製報價文字");
+        }
+      });
+    }
+
+    function bindReset(){
+      $("resetBtn").addEventListener("click", () => {
+        state.serviceId = CONFIG.baseServices[0].id;
+        state.areaId = CONFIG.areas[0].id;
+        state.discountType = "none";
+        state.discountMinusValue = 0;
+        state.note = "";
+        for (const addon of CONFIG.addons){
+          state.addons[addon.id].enabled = false;
+          state.addons[addon.id].range = "hands";
+          state.addons[addon.id].qty = 0;
+        }
+        $("discountType").value = "none";
+        $("discountMinusValue").value = "";
+        $("discountMinusWrap").style.display = "none";
+        $("note").value = "";
+        renderServiceOptions();
+        renderAreaOptions();
+        renderAddonGrid();
+        recalcAndRender();
+        showToast("已重設");
+      });
+    }
+
+    function init(){
+      renderServiceOptions();
+      renderAreaOptions();
+      renderAddonGrid();
+
+      $("discountType").value = state.discountType;
+      $("discountMinusWrap").style.display = "none";
+
+      bindDiscount();
+      bindNote();
+      bindCopy();
+      bindReset();
+
+      recalcAndRender();
+    }
+
+    init();
+  </script>
+</body>
+</html>
