@@ -5,19 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nail Price Calculator - 美甲價目計算機</title>
     
-    <!-- 引入 Tailwind CSS -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <meta name="apple-mobile-web-app-title" content="美甲計算機">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 引入 React 和 ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- 引入 Babel 用於解析 JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* 避免在手機上長按文字時彈出選單，增加 App 感 */
+            -webkit-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
