@@ -1,0 +1,64 @@
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- 
+    設計概念：日系跳色幾何指甲油瓶
+    配色：
+    - 鵝黃 (Yellow): #FDE047
+    - 薄荷綠 (Mint): #86EFAC
+    - 霧霾藍 (Blue): #93C5FD
+    - 珊瑚粉 (Coral): #FCA5A5
+    - 背景: #FDFBF7 (與 App 一致)
+  -->
+
+  <!-- 背景 -->
+  <rect width="180" height="180" fill="#FDFBF7"/>
+
+  <!-- 陰影 (裝飾用，讓物體稍微浮起) -->
+  <ellipse cx="90" cy="145" rx="35" ry="6" fill="#000000" opacity="0.05"/>
+
+  <!-- 指甲油瓶身 (Bottle) -->
+  <g transform="translate(55, 75)">
+    <!-- 瓶身輪廓遮罩 (用來做色塊切割) -->
+    <defs>
+      <path id="bottleShape" d="M10,0 H60 C65.5,0 70,4.5 70,10 V45 C70,55 62,65 50,65 H20 C8,65 0,55 0,45 V10 C0,4.5 4.5,0 10,0 Z" />
+    </defs>
+    
+    <!-- 瓶身底色 - 幾何拼接 -->
+    <use href="#bottleShape" fill="#FCA5A5" /> <!-- 全局底色 (珊瑚粉) -->
+    
+    <!-- 左上切塊 (霧霾藍) -->
+    <path d="M0,0 H35 V32 H0 Z" fill="#93C5FD" clip-path="url(#bottleShape)"/>
+    
+    <!-- 右下切塊 (鵝黃) -->
+    <path d="M35,32 H70 V65 H35 Z" fill="#FDE047" clip-path="url(#bottleShape)"/>
+    
+    <!-- 瓶身反光 -->
+    <path d="M5,10 Q5,40 15,55" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.4" fill="none"/>
+  </g>
+
+  <!-- 指甲油瓶蓋 (Cap) -->
+  <g transform="translate(72, 25)">
+    <!-- 瓶蓋輪廓 -->
+    <defs>
+      <rect id="capShape" width="36" height="50" rx="6" />
+    </defs>
+    
+    <!-- 瓶蓋底色 - 雙色拼接 -->
+    <use href="#capShape" fill="#86EFAC" /> <!-- 右側 (薄荷綠) -->
+    
+    <!-- 左側切塊 (鵝黃) -->
+    <path d="M0,0 H18 V50 H0 Z" fill="#FDE047" clip-path="url(#capShape)"/>
+    
+    <!-- 瓶蓋反光 -->
+    <rect x="24" y="8" width="4" height="20" rx="2" fill="white" opacity="0.3"/>
+  </g>
+
+  <!-- 裝飾元素 (Sparkles) -->
+  <g fill="#93C5FD">
+    <circle cx="140" cy="40" r="5" opacity="0.8"/>
+    <circle cx="40" cy="130" r="3" opacity="0.6"/>
+    <circle cx="145" cy="120" r="2" opacity="0.5"/>
+  </g>
+  
+  <path d="M40 40 L42 35 L44 40 L49 42 L44 44 L42 49 L40 44 L35 42 Z" fill="#FDE047" />
+
+</svg>
